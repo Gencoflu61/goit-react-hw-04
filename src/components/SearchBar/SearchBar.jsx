@@ -1,40 +1,45 @@
-import { useState } from "react";
-import styles from "./SearchBar.module.css"
-function SearchBar({ onSearch }) {
-    const [searchTerm, setSearchTerm] = useState('');
+import { useRef } from "react";
+import toast, { Toaster } from 'react-hot-toast';
+import { FaSearch } from 'react-icons/fa'; 
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        //Eğer kullanıcı boş arama yaparsa
-        if (searchTerm.trim() === ''){
-            alert('Lütfen bir arama terimi girin!');
-            return;
-        }
-        //Arama terimi ana bileşene gönderme
-        onSearch(searchTerm.trim());
-    };
+import css from './SearchBar.module.css';
 
-    // Input değiştiğinde çalışacak fonsiyon
-    const handleChange = (e) => {
-        setSearchTerm(e.target.value);
+const SearchBar = ({ setSearch }) => {
+  const inputRef = useRef();
 
-    };
-    // Ekranda gösterilecek HTML
-    return(
-        <header style={styles.header}>
-            <form style={styles.form} onSubmit={handleSubmit}>
-                <input 
-                  style={styles.input}
-                  type="text"
-                  placeholder="Kediler, köpekler, manzara..."
-                  value={searchTerm}
-                  onChange={handleChange}
-                  />
-                  <button type="submit" style={styles.button}>
-                    Ara
-                  </button>
-            </form>
-        </header>
-    );
-};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    let query = inputRef.current.value;
+    if (query.trim() === '') {
+      toast.error('Boş Bırakılamaz!', { duration: 2000 });
+      return;
+    } else {
+      setSearch(query);
+    }
+  }
+
+  return (
+    <header className={css.header}>
+      <form className={css.form} onSubmit={handleSubmit}>
+        <button 
+          type="submit" 
+          className={css.formButton}
+        >
+          <FaSearch size={20} /> 
+        </button>
+        <input
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          ref={inputRef}
+          className={css.formInput}
+        />
+      </form>
+      <Toaster position="top-right" />
+    </header>
+  )
+}
+
 export default SearchBar;
